@@ -1,10 +1,18 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+//import { AuthModule } from 'src/auth/auth.module';
+import { Users } from './user.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Profile } from 'src/profile/profile.entity';
 
 @Module({
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [UsersService], // Export UsersService to be used in other modules
+  //exports: [UsersService], // Export UsersService to be used in other modules
+  //imports: [forwardRef(() => AuthModule)], // Use forwardRef to avoid circular dependency
+  // This is necessary if AuthService needs to use UsersService
+  // and UsersService needs to use AuthService.
+  imports: [TypeOrmModule.forFeature([Users, Profile])], // Add your entities here
 })
 export class UsersModule {}

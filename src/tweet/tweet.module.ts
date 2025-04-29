@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { TweetController } from './tweet.controller';
-import { TweetService } from './tweet.service';
-import { UsersModule } from 'src/users/users.module';
+// import { Module } from '@nestjs/common';
+// import { TweetController } from './tweet.controller';
+// import { TweetService } from './tweet.service';
+// import { UsersModule } from 'src/users/users.module';
 
-@Module({
-  controllers: [TweetController],
-  providers: [TweetService],
-  imports: [UsersModule], // import UsersModule to use UsersService
-})
-export class TweetModule {}
+// @Module({
+//   controllers: [TweetController],
+//   providers: [TweetService],
+//   imports: [UsersModule], // import UsersModule to use UsersService
+// })
+// export class TweetModule {}

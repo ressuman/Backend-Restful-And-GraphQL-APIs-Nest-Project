@@ -1,86 +1,190 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  //forwardRef,
+  // Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+//import { AuthService } from 'src/auth/auth.service';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { Users } from './user.entity';
+import { Profile } from 'src/profile/profile.entity';
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  age: number;
-  gender: string;
-  isMarried: boolean;
-}
+// export interface User {
+//   id: number;
+//   name: string;
+//   email: string;
+//   age: number;
+//   gender: string;
+//   isMarried: boolean;
+//   password: string;
+// }
+
+// @Injectable()
+// export class UsersService {
+//   constructor(
+//     @Inject(forwardRef(() => AuthService))
+//     private readonly authService: AuthService,
+//   ) {}
+
+//   private readonly users: User[] = [
+//     {
+//       id: 1,
+//       name: 'John',
+//       email: '6tGt4@example.com',
+//       age: 30,
+//       gender: 'male',
+//       isMarried: false,
+//       password: 'password123',
+//     },
+//     {
+//       id: 2,
+//       name: 'Jane',
+//       email: 'kMgBt@example.com',
+//       age: 25,
+//       gender: 'female',
+//       isMarried: true,
+//       password: 'password123',
+//     },
+//     {
+//       id: 3,
+//       name: 'Bob',
+//       email: 'B4L4M@example.com',
+//       age: 40,
+//       gender: 'male',
+//       isMarried: false,
+//       password: 'password123',
+//     },
+//     {
+//       id: 4,
+//       name: 'Alice',
+//       email: 'm6t4o@example.com',
+//       age: 35,
+//       gender: 'female',
+//       isMarried: true,
+//       password: 'password123',
+//     },
+//   ];
+
+//   getAllUsers(): User[] {
+//     if (this.authService.isAuthenticated) {
+//       return this.users;
+//     }
+
+//     throw new Error('You are not authorized to view this information.');
+//   }
+
+//   getUserById(id: number): User {
+//     const user = this.users.find((u) => u.id === id);
+//     if (!user) {
+//       throw new NotFoundException(`User with id ${id} not found`);
+//     }
+//     return user;
+//   }
+
+//   createUser(userData: Omit<User, 'id'>): User {
+//     const newUser: User = {
+//       id: this.users.length + 1,
+//       ...userData,
+//     };
+//     this.users.push(newUser);
+//     return newUser;
+//   }
+
+//   updateUser(id: number, updateData: Partial<Omit<User, 'id'>>): User {
+//     const user = this.getUserById(id);
+//     const updatedUser = { ...user, ...updateData };
+//     const index = this.users.findIndex((u) => u.id === id);
+//     this.users[index] = updatedUser;
+//     return updatedUser;
+//   }
+
+//   deleteUser(id: number): User {
+//     const index = this.users.findIndex((u) => u.id === id);
+//     if (index === -1) {
+//       throw new NotFoundException(`User with id ${id} not found`);
+//     }
+//     const [deletedUser] = this.users.splice(index, 1);
+//     return deletedUser;
+//   }
+// }
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [
-    {
-      id: 1,
-      name: 'John',
-      email: '6tGt4@example.com',
-      age: 30,
-      gender: 'male',
-      isMarried: false,
-    },
-    {
-      id: 2,
-      name: 'Jane',
-      email: 'kMgBt@example.com',
-      age: 25,
-      gender: 'female',
-      isMarried: true,
-    },
-    {
-      id: 3,
-      name: 'Bob',
-      email: 'B4L4M@example.com',
-      age: 40,
-      gender: 'male',
-      isMarried: false,
-    },
-    {
-      id: 4,
-      name: 'Alice',
-      email: 'm6t4o@example.com',
-      age: 35,
-      gender: 'female',
-      isMarried: true,
-    },
-  ];
+  constructor(
+    @InjectRepository(Users) private readonly userRepository: Repository<Users>,
 
-  getAllUsers(): User[] {
-    return this.users;
+    @InjectRepository(Profile)
+    private readonly profileRepository: Repository<Profile>,
+  ) {}
+
+  public async getAllUsers() {
+    return await this.userRepository.find();
   }
 
-  getUserById(id: number): User {
-    const user = this.users.find((u) => u.id === id);
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
-    return user;
-  }
+  public async createUser(userDto: CreateUserDto) {
+    /* The commented code block you provided is a part of the `createUser` method in the `UsersService`
+ class. Here's a breakdown of what each step is doing: */
+    // // 1. Validate if the user already exists with the given email in the database
+    // const user = await this.userRepository.findOne({
+    //   where: {
+    //     email: userDto.email,
+    //   },
+    // });
+    // // 2. If the user already exists, throw an error - exception
+    // if (user) {
+    //   throw new NotFoundException(
+    //     `User with email ${userDto.email} already exists`,
+    //   );
+    // }
+    // // 3. If the user doesn't exist, create a new user in the database
+    // const newUser = this.userRepository.create(userDto);
+    // await this.userRepository.save(newUser);
+    // // 4. Return the newly created user
+    // return {
+    //   message: 'User created successfully',
+    //   user: newUser,
+    // };
+    // Create a Profile & save it to the database
+    userDto.profile = userDto.profile ?? {};
+    const profile = this.profileRepository.create(userDto.profile);
+    await this.profileRepository.save(profile);
 
-  createUser(userData: Omit<User, 'id'>): User {
-    const newUser: User = {
-      id: this.users.length + 1,
-      ...userData,
+    // Create a new user
+    const user = this.userRepository.create(userDto);
+
+    // Set the profile to the user
+    user.profile = profile;
+
+    // Save the user to the database
+    //user = await this.userRepository.save({ ...user });
+    await this.userRepository.save(user);
+
+    // Return the user
+    return {
+      message: 'User created successfully',
+      user,
     };
-    this.users.push(newUser);
-    return newUser;
   }
 
-  updateUser(id: number, updateData: Partial<Omit<User, 'id'>>): User {
-    const user = this.getUserById(id);
-    const updatedUser = { ...user, ...updateData };
-    const index = this.users.findIndex((u) => u.id === id);
-    this.users[index] = updatedUser;
-    return updatedUser;
-  }
+  updateUser() {}
 
-  deleteUser(id: number): User {
-    const index = this.users.findIndex((u) => u.id === id);
-    if (index === -1) {
-      throw new NotFoundException(`User with id ${id} not found`);
+  public async deleteUser(id: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
-    const [deletedUser] = this.users.splice(index, 1);
-    return deletedUser;
+
+    await this.userRepository.delete(id);
+
+    return {
+      message: `User with ID ${id} deleted successfully`,
+    };
   }
 }
