@@ -120,7 +120,13 @@ export class UsersService {
   ) {}
 
   public async getAllUsers() {
-    return await this.userRepository.find();
+    return await this.userRepository.find({
+      relations: {
+        profile: true,
+        //tweet: true,
+        // Add other relations if needed
+      },
+    });
   }
 
   public async createUser(userDto: CreateUserDto) {
@@ -148,14 +154,19 @@ export class UsersService {
     // };
     // Create a Profile & save it to the database
     userDto.profile = userDto.profile ?? {};
-    const profile = this.profileRepository.create(userDto.profile);
-    await this.profileRepository.save(profile);
+    // const profile = this.profileRepository.create(userDto.profile);
+    // await this.profileRepository.save(profile);
 
     // Create a new user
     const user = this.userRepository.create(userDto);
 
-    // Set the profile to the user
-    user.profile = profile;
+    // // Set the profile to the user
+    // user.profile = profile;
+
+    // // Explicitly set the reverse relationship
+    // if (user.profile) {
+    //   user.profile.user = user;
+    // }
 
     // Save the user to the database
     //user = await this.userRepository.save({ ...user });
@@ -170,19 +181,31 @@ export class UsersService {
 
   updateUser() {}
 
+  // public async deleteUser(id: number) {
+  //   //
+  //   const user = await this.userRepository.findOne({
+  //     where: {
+  //       id,
+  //     },
+  //   });
+
+  //   if (!user) {
+  //     throw new NotFoundException(`User with ID ${id} not found`);
+  //   }
+
+  //   // Delete the user
+  //   await this.userRepository.delete(id);
+
+  //   // Send a response indicating successful deletion
+  //   return {
+  //     message: `User with ID ${id} deleted successfully`,
+  //   };
+  // }
   public async deleteUser(id: number) {
-    const user = await this.userRepository.findOne({
-      where: {
-        id,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-
+    // Delete the user
     await this.userRepository.delete(id);
 
+    // Send a response indicating successful deletion
     return {
       message: `User with ID ${id} deleted successfully`,
     };

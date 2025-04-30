@@ -1,10 +1,12 @@
 import { Profile } from 'src/profile/profile.entity';
+import { Tweet } from 'src/tweet/tweet.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -40,11 +42,27 @@ export class Users {
 
   /* The code snippet you provided is defining a relationship between the `Users` entity and the
 `Profile` entity using TypeORM decorators in TypeScript. */
-  @OneToOne(() => Profile, {
-    // cascade: true,
+  @OneToOne(() => Profile, (profile) => profile.user, {
+    // This will automatically insert or update or remove or recover or soft-remove the related profile when the user is saved
+    //cascade: true,
+    // This will automatically insert or update the related profile when the user is saved
+    cascade: [
+      'insert',
+      // 'update'
+    ],
+    //eager: true,
   })
-  @JoinColumn()
+  //@JoinColumn()
   profile?: Profile;
+
+  @OneToMany(
+    () => Tweet,
+    (tweet) => tweet.user,
+    // {
+    //   //cascade: true,
+    // }
+  )
+  tweets: Tweet[];
 
   @CreateDateColumn()
   createdAt: Date;
