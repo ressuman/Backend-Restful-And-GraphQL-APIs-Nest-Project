@@ -10,7 +10,7 @@ import { Tweet } from 'src/tweet/tweet.entity';
 @Module({
   controllers: [UsersController],
   providers: [UsersService],
-  //exports: [UsersService], // Export UsersService to be used in other modules
+  exports: [UsersService], // Export UsersService to be used in other modules
   //imports: [forwardRef(() => AuthModule)], // Use forwardRef to avoid circular dependency
   // This is necessary if AuthService needs to use UsersService
   // and UsersService needs to use AuthService.

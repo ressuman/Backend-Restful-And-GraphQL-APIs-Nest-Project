@@ -3,16 +3,17 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 //import { AuthModule } from './auth/auth.module';
-//import { TweetModule } from './tweet/tweet.module';
+import { TweetModule } from './tweet/tweet.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from './users/user.entity';
+//import { Users } from './users/user.entity';
 import { ProfileModule } from './profile/profile.module';
+import { HashtagModule } from './hashtag/hashtag.module';
 
 @Module({
   imports: [
     UsersModule,
     //AuthModule,
-    //TweetModule,
+    TweetModule,
     // Synchronous approach which is not recommended in production
     //   TypeOrmModule.forRoot({
     //     type: 'postgres',
@@ -43,6 +44,7 @@ import { ProfileModule } from './profile/profile.module';
       }),
     }),
     ProfileModule,
+    HashtagModule,
   ],
   //  TypeOrmModule.forRootAsync({
   //     useFactory: async () => ({

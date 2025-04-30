@@ -210,4 +210,14 @@ export class UsersService {
       message: `User with ID ${id} deleted successfully`,
     };
   }
+
+  public async findUserById(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
+  }
 }
