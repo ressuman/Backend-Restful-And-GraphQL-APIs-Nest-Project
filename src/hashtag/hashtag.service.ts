@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Hashtag } from './hashtag.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateHashtagDto } from './dtos/create-hashtag.dto';
 
 @Injectable()
@@ -17,6 +17,18 @@ export class HashtagService {
 
     return {
       message: 'Hashtag created successfully',
+      hashtag,
+    };
+  }
+
+  async findHashtags(hashtags: number[]) {
+    const hashtag = await this.hashtagRepository.find({
+      where: {
+        id: In(hashtags),
+      },
+    });
+    return {
+      message: 'Hashtags fetched successfully',
       hashtag,
     };
   }
@@ -53,12 +65,17 @@ export class HashtagService {
   }
 
   async deleteHashtag(id: number) {
-    const hashtag = await this.hashtagRepository.findOneBy({ id });
-    if (!hashtag) {
-      throw new NotFoundException('Hashtag not found');
-    }
+    // const hashtag = await this.hashtagRepository.findOneBy({ id });
+    // if (!hashtag) {
+    //   throw new NotFoundException('Hashtag not found');
+    // }
 
-    await this.hashtagRepository.delete(id);
-    return { message: 'Hashtag deleted successfully' };
+    await this.hashtagRepository.delete({ id });
+    return { message: 'Hashtag deleted successfully', id };
+  }
+
+  async softDeleteHashtag(id: number) {
+    await this.hashtagRepository.softDelete({ id });
+    return { message: 'Hashtag deleted softly successfully', id };
   }
 }

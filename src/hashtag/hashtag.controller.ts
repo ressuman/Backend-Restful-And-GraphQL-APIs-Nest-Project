@@ -42,4 +42,9 @@ export class HashtagController {
   async deleteHashtag(@Param('id', ParseIntPipe) id: number) {
     return await this.hashtagService.deleteHashtag(id);
   }
+
+  @Delete('soft-delete/:id')
+  async softDeleteHashtag(@Param('id', ParseIntPipe) id: number) {
+    return await this.hashtagService.softDeleteHashtag(id);
+  }
 }

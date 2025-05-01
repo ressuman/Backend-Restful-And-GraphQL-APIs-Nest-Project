@@ -38,9 +38,9 @@ export class Tweet {
   )
   user: Users;
 
-  @ManyToMany(() => Hashtag)
+  @ManyToMany(() => Hashtag, (hashtag) => hashtag.tweets)
   @JoinTable({ name: 'tweet_hashtag' })
-  hashtag: Hashtag;
+  hashtags: Hashtag[];
 
   @CreateDateColumn()
   createdAt: Date;

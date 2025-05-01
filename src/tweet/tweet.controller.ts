@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { TweetService } from './tweet.service';
 import { CreateTweetDto } from './dtos/create-tweet.dto';
+import { UpdateTweetDto } from './dtos/update-tweet.dto';
 
 // http://localhost:3000/tweet
 @Controller('tweet')
@@ -34,15 +35,22 @@ export class TweetController {
     return await this.tweetService.getTweetById(id.toString());
   }
 
-  // PATCH /tweet/:id
-  @Patch(':id')
-  async updateTweet(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
-    return await this.tweetService.updateTweet(id.toString(), body);
+  // // PATCH /tweet/:id
+  // @Patch(':id')
+  // async updateTweet(
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Body() body: Omit<UpdateTweetDto, 'id'>,
+  // ) {
+  //   return await this.tweetService.updateTweet({ ...body, id });
+  // }
+  @Patch()
+  async updateTweet(@Body() tweet: UpdateTweetDto) {
+    return await this.tweetService.updateTweet(tweet);
   }
 
   // DELETE /tweet/:id
   @Delete(':id')
   async deleteTweet(@Param('id', ParseIntPipe) id: number) {
-    return await this.tweetService.deleteTweet(id.toString());
+    return await this.tweetService.deleteTweet(id);
   }
 }
