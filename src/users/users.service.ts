@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { Users } from './user.entity';
 import { Profile } from 'src/profile/profile.entity';
+import { ConfigService } from '@nestjs/config';
 
 // export interface User {
 //   id: number;
@@ -117,9 +118,20 @@ export class UsersService {
 
     @InjectRepository(Profile)
     private readonly profileRepository: Repository<Profile>,
+
+    private readonly configService: ConfigService,
   ) {}
 
   public async getAllUsers() {
+    //const environment = this.configService.get<string>('ENV_MODE');
+    const environment: string | undefined =
+      this.configService.get<string>('ENV_MODE');
+    console.log(environment);
+    const env = process.env.ENV_MODE;
+    console.log(env);
+    const envI = process.env.NODE_ENV;
+    console.log(envI);
+
     return await this.userRepository.find({
       relations: {
         profile: true,
