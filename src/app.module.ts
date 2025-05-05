@@ -12,6 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 //import { appConfig } from './config/app.config';
 import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
+import envValidation, { configValidationSchema } from './config/env.validation';
 
 const ENV = process.env.NODE_ENV;
 console.log(ENV);
@@ -105,6 +106,8 @@ console.log(ENV);
       // Using custom configuration env fil
       //load: [appConfig],
       load: [appConfig, databaseConfig],
+      validationSchema: envValidation,
+      //validationSchema: configValidationSchema,
     }),
   ],
   //  TypeOrmModule.forRootAsync({

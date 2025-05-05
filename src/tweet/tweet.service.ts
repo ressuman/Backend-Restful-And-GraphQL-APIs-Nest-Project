@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Tweet } from './tweet.entity';
@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTweetDto } from './dtos/create-tweet.dto';
 import { HashtagService } from 'src/hashtag/hashtag.service';
 import { UpdateTweetDto } from './dtos/update-tweet.dto';
+import { PaginationQueryDto } from '../common/pagination/dtos/pagination-query.dto';
 
 @Injectable()
 export class TweetService {
@@ -18,7 +19,14 @@ export class TweetService {
     private readonly tweetRepository: Repository<Tweet>,
   ) {}
 
-  async getTweets(userId: number) {
+  // Get all tweets
+  async getAllTweets(userId: number) {
+    const user = await this.userService.findUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User with userId ' + userId + ' not found');
+    }
+
     const tweets = await this.tweetRepository.find({
       relations: {
         user: true,
@@ -29,6 +37,47 @@ export class TweetService {
           id: userId,
         },
       },
+    });
+
+    return {
+      message: 'Tweets fetched successfully',
+      tweets,
+    };
+  }
+
+  // Get all tweets by pagination query
+  async getTweets(userId: number, paginationQueryDto: PaginationQueryDto) {
+    const user = await this.userService.findUserById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User with userId ' + userId + ' not found');
+    }
+
+    const tweets = await this.tweetRepository.find({
+      relations: {
+        user: true,
+        hashtags: true,
+      },
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+
+      // If the page=1 and limit=10, then skip=0 and take=10, and if page=2 and limit=10, then skip=10 and take=10, and if page=3 and limit=10, then skip=20 and take=10
+
+      // Formulas for page
+      // Page 1: (1 - 1) * (10) = 0
+      // Page 2: (2 - 1) * (10) = 10
+      // Page 3: (3 - 1) * (10) = 20
+      // Page 4: (4 - 1) * (10) = 30
+
+      // Formulas for skip
+      // Page 1: (page - 1) * limit
+
+      skip:
+        ((paginationQueryDto.page ?? 1) - 1) * (paginationQueryDto.limit ?? 10), // skip first 10 tweets
+      take: paginationQueryDto.limit ?? 10, // take next 10 tweets
     });
 
     return {

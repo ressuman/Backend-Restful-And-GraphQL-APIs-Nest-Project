@@ -239,11 +239,10 @@ export class UsersController {
   }
 
   // GET /users/:id
-  //@Get(':id')
-  // @UsePipes(new ValidationPipe({ transform: true }))
-  // getUserById(@Param() params: GetUserByIdDto) {
-  //   return this.usersService.getUserById(params.id);
-  // }
+  @Get(':id')
+  getUserById(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findUserById(id);
+  }
 
   // POST /users/create
   @Post()
