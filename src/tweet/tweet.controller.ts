@@ -13,6 +13,7 @@ import { TweetService } from './tweet.service';
 import { CreateTweetDto } from './dtos/create-tweet.dto';
 import { UpdateTweetDto } from './dtos/update-tweet.dto';
 import { PaginationQueryDto } from 'src/common/pagination/dtos/pagination-query.dto';
+import { GetTweetQueryDto } from './dtos/get-tweet-query.dto';
 
 // http://localhost:3000/tweet
 @Controller('tweet')
@@ -32,8 +33,11 @@ export class TweetController {
   async getAllTweets(
     @Param('userid', ParseIntPipe) userId: number,
     @Query() paginationQueryDto: PaginationQueryDto,
+    //@Query() getTweetQueryDto: GetTweetQueryDto,
   ) {
     console.log(paginationQueryDto);
+    //console.log(getTweetQueryDto);
+    // return await this.tweetService.getTweets(userId, getTweetQueryDto);
     return await this.tweetService.getTweets(userId, paginationQueryDto);
   }
 

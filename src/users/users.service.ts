@@ -157,6 +157,35 @@ export class UsersService {
     }
   }
 
+  public async getUsers() {
+    try {
+      //const environment = this.configService.get<string>('ENV_MODE');
+      const environment: string | undefined =
+        this.configService.get<string>('ENV_MODE');
+      console.log(environment);
+      const env = process.env.ENV_MODE;
+      console.log(env);
+      const envI = process.env.NODE_ENV;
+      console.log(envI);
+
+      return await this.userRepository.find({
+        relations: {
+          profile: true,
+          //tweet: true,
+          // Add other relations if needed
+        },
+      });
+    } catch (error) {
+      if ((error as any).code === 'ECONNREFUSED') {
+        throw new RequestTimeoutException('Failed to fetch users', {
+          description: 'Could not connect to database',
+        });
+      }
+
+      console.log(error);
+    }
+  }
+
   public async createUser(userDto: CreateUserDto) {
     try {
       /* The commented code block you provided is a part of the `createUser` method in the `UsersService`

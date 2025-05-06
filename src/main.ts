@@ -16,7 +16,13 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  // await app.listen(process.env.PORT ?? 3000);
+  // console.log(`Application is running on: ${await app.getUrl()}`);
+
+  const port = process.env.PORT ?? 3000;
+  const host = 'localhost'; // explicitly set to localhost
+
+  await app.listen(port, host);
+  console.log(`Application is running on: http://${host}:${port}`);
 }
 bootstrap();

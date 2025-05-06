@@ -13,6 +13,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
 import envValidation, { configValidationSchema } from './config/env.validation';
+import { PaginationModule } from './common/pagination/pagination.module';
 
 const ENV = process.env.NODE_ENV;
 console.log(ENV);
@@ -109,6 +110,7 @@ console.log(ENV);
       validationSchema: envValidation,
       //validationSchema: configValidationSchema,
     }),
+    PaginationModule,
   ],
   //  TypeOrmModule.forRootAsync({
   //     useFactory: async () => ({

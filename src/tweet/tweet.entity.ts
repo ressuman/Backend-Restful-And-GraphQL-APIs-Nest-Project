@@ -31,14 +31,14 @@ export class Tweet {
   @ManyToOne(
     () => Users,
     (user) => user.tweets,
-    //{ eager: true },
+    { eager: true },
     // {
     //   //onDelete: 'CASCADE',
     // }
   )
   user: Users;
 
-  @ManyToMany(() => Hashtag, (hashtag) => hashtag.tweets)
+  @ManyToMany(() => Hashtag, (hashtag) => hashtag.tweets, { eager: true })
   @JoinTable({ name: 'tweet_hashtag' })
   hashtags: Hashtag[];
 

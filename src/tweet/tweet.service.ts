@@ -7,6 +7,8 @@ import { CreateTweetDto } from './dtos/create-tweet.dto';
 import { HashtagService } from 'src/hashtag/hashtag.service';
 import { UpdateTweetDto } from './dtos/update-tweet.dto';
 import { PaginationQueryDto } from '../common/pagination/dtos/pagination-query.dto';
+import { PaginationService } from 'src/common/pagination/pagination.service';
+import { PaginationInterface } from 'src/common/pagination/pagination.interface';
 
 @Injectable()
 export class TweetService {
@@ -17,6 +19,8 @@ export class TweetService {
 
     @InjectRepository(Tweet)
     private readonly tweetRepository: Repository<Tweet>,
+
+    private readonly paginationService: PaginationService,
   ) {}
 
   // Get all tweets
@@ -46,39 +50,42 @@ export class TweetService {
   }
 
   // Get all tweets by pagination query
-  async getTweets(userId: number, paginationQueryDto: PaginationQueryDto) {
+  async getTweets(
+    userId: number,
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<PaginationInterface<Tweet>> {
     const user = await this.userService.findUserById(userId);
 
     if (!user) {
       throw new NotFoundException('User with userId ' + userId + ' not found');
     }
 
-    const tweets = await this.tweetRepository.find({
-      relations: {
-        user: true,
-        hashtags: true,
-      },
-      where: {
+    const tweets = await this.paginationService.paginatedQuery(
+      paginationQueryDto,
+      this.tweetRepository,
+      {
+        //where: {
         user: {
           id: userId,
         },
+        //},
+
+        // If the page=1 and limit=10, then skip=0 and take=10, and if page=2 and limit=10, then skip=10 and take=10, and if page=3 and limit=10, then skip=20 and take=10
+
+        // Formulas for page
+        // Page 1: (1 - 1) * (10) = 0
+        // Page 2: (2 - 1) * (10) = 10
+        // Page 3: (3 - 1) * (10) = 20
+        // Page 4: (4 - 1) * (10) = 30
+
+        // Formulas for skip
+        // Page 1: (page - 1) * limit
+
+        // skip:
+        //   ((paginationQueryDto.page ?? 1) - 1) * (paginationQueryDto.limit ?? 10), // skip first 10 tweets
+        // take: paginationQueryDto.limit ?? 10, // take next 10 tweets
       },
-
-      // If the page=1 and limit=10, then skip=0 and take=10, and if page=2 and limit=10, then skip=10 and take=10, and if page=3 and limit=10, then skip=20 and take=10
-
-      // Formulas for page
-      // Page 1: (1 - 1) * (10) = 0
-      // Page 2: (2 - 1) * (10) = 10
-      // Page 3: (3 - 1) * (10) = 20
-      // Page 4: (4 - 1) * (10) = 30
-
-      // Formulas for skip
-      // Page 1: (page - 1) * limit
-
-      skip:
-        ((paginationQueryDto.page ?? 1) - 1) * (paginationQueryDto.limit ?? 10), // skip first 10 tweets
-      take: paginationQueryDto.limit ?? 10, // take next 10 tweets
-    });
+    );
 
     return {
       message: 'Tweets fetched successfully',

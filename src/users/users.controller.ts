@@ -230,8 +230,17 @@ export class UsersController {
 
   // GET /users?gender=male&page=1&limit=10
   @Get()
-  async getAllUsers() {
+  async getUsers() {
     const users = await this.usersService.getAllUsers();
+    return {
+      message: 'All users fetched successfully',
+      users,
+    };
+  }
+
+  @Get('all-users')
+  async getAllUsers() {
+    const users = await this.usersService.getUsers();
     return {
       message: 'All users fetched successfully',
       users,
