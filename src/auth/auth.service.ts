@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import authConfig from './config/auth.config';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { HashingService } from './provider/hashing/hashing.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,8 @@ export class AuthService {
     private readonly authConfiguration: ConfigType<typeof authConfig>,
 
     private readonly hashingService: HashingService,
+
+    private readonly jwtService: JwtService,
   ) {}
 
   isAuthenticated: boolean = false;
@@ -70,10 +73,26 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials.');
     }
     // 4. If the passwords match, return a response indicating that the user has logged in successfully- return access token
+    // Generate jwt token and send it to the user in the response
+    const token = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        //username: user.username,
+        email: user.email,
+      },
+      {
+        secret: this.authConfiguration.secret,
+        expiresIn: this.authConfiguration.expiresIn,
+        audience: this.authConfiguration.audience,
+        issuer: this.authConfiguration.issuer,
+      },
+    );
+
     return {
       success: true,
       message: 'User logged in successfully',
       user,
+      token,
     };
   }
 }
