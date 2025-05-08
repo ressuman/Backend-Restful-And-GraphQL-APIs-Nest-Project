@@ -14,7 +14,7 @@ export const configValidationSchema = Joi.object({
   DB_NAME: Joi.string().required(),
   DB_SYNC: Joi.boolean().required(),
   DB_AUTO_LOAD: Joi.boolean().required(),
-  SECRET_KEY: Joi.string().required(),
+  //SECRET_KEY: Joi.string().required(),
 });
 
 export default Joi.object({
@@ -31,5 +31,5 @@ export default Joi.object({
   DB_NAME: Joi.string().required(),
   DB_SYNC: Joi.boolean().required(),
   DB_AUTO_LOAD: Joi.boolean().required(),
-  SECRET_KEY: Joi.string().required(),
+  JWT_TOKEN_SECRET: Joi.string().required(),
 });

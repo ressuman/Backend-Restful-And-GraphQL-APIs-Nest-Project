@@ -1,12 +1,15 @@
 import {
   BadRequestException,
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   //forwardRef,
   // Inject,
   Injectable,
   NotFoundException,
   RequestTimeoutException,
+  UnauthorizedException,
 } from '@nestjs/common';
 //import { AuthService } from 'src/auth/auth.service';
 import { Repository } from 'typeorm';
@@ -15,8 +18,11 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { Users } from './user.entity';
 import { Profile } from 'src/profile/profile.entity';
 import { ConfigService } from '@nestjs/config';
-import { error } from 'console';
 import { UserAlreadyExistsException } from 'src/customExceptions/user-already-exists.exception';
+import { PaginationService } from 'src/common/pagination/pagination.service';
+import { PaginationQueryDto } from 'src/common/pagination/dtos/pagination-query.dto';
+import { PaginationInterface } from 'src/common/pagination/pagination.interface';
+import { HashingService } from '../auth/provider/hashing/hashing.service';
 
 // export interface User {
 //   id: number;
@@ -126,6 +132,11 @@ export class UsersService {
     private readonly profileRepository: Repository<Profile>,
 
     private readonly configService: ConfigService,
+
+    private readonly paginationService: PaginationService,
+
+    @Inject(forwardRef(() => HashingService))
+    private readonly hashingService: HashingService,
   ) {}
 
   public async getAllUsers() {
@@ -157,24 +168,22 @@ export class UsersService {
     }
   }
 
-  public async getUsers() {
+  public async getUsers(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<PaginationInterface<Users>> {
     try {
-      //const environment = this.configService.get<string>('ENV_MODE');
-      const environment: string | undefined =
-        this.configService.get<string>('ENV_MODE');
-      console.log(environment);
-      const env = process.env.ENV_MODE;
-      console.log(env);
-      const envI = process.env.NODE_ENV;
-      console.log(envI);
+      return await this.paginationService.paginatedQuery(
+        paginationQueryDto,
+        this.userRepository,
+        undefined,
+        ['profile'],
+      );
 
-      return await this.userRepository.find({
-        relations: {
-          profile: true,
-          //tweet: true,
-          // Add other relations if needed
-        },
-      });
+      // return await this.userRepository.find({
+      //   relations: {
+      //     profile: true,
+      //   },
+      // });
     } catch (error) {
       if ((error as any).code === 'ECONNREFUSED') {
         throw new RequestTimeoutException('Failed to fetch users', {
@@ -183,8 +192,38 @@ export class UsersService {
       }
 
       console.log(error);
+      throw error; // Ensure the error is re-thrown to maintain proper error handling
     }
   }
+
+  // public async getUsers(
+  //   paginationQueryDto: PaginationQueryDto,
+  // ): Promise<PaginationInterface<Users>> {
+  //   try {
+  //     const users = await this.paginationService.paginatedQuery(
+  //       paginationQueryDto,
+  //       this.userRepository,
+  //       undefined,
+  //       ['profile'],
+  //     );
+
+  //     // return await this.userRepository.find({
+  //     //   relations: {
+  //     //     profile: true,
+  //     //   },
+  //     // });
+
+  //     return users;
+  //   } catch (error) {
+  //     if ((error as any).code === 'ECONNREFUSED') {
+  //       throw new RequestTimeoutException('Failed to fetch users', {
+  //         description: 'Could not connect to database',
+  //       });
+  //     }
+
+  //     console.log(error);
+  //   }
+  // }
 
   public async createUser(userDto: CreateUserDto) {
     try {
@@ -252,7 +291,10 @@ export class UsersService {
       }
 
       // Create a new user
-      const user = this.userRepository.create(userDto);
+      const user = this.userRepository.create({
+        ...userDto,
+        password: await this.hashingService.hashPassword(userDto.password),
+      });
 
       // // Set the profile to the user
       // user.profile = profile;
@@ -373,5 +415,25 @@ export class UsersService {
     //     description: 'Could not connect to database',
     //   });
     // }
+  }
+
+  async findUserByUsername(username: string): Promise<Users> {
+    let user: Users | null = null;
+
+    try {
+      user = await this.userRepository.findOneBy({ username });
+    } catch (error) {
+      throw new RequestTimeoutException(error, {
+        description: 'User with given username not found',
+      });
+    }
+
+    if (!user) {
+      throw new UnauthorizedException(
+        `User with username ${username} not found`,
+      );
+    }
+
+    return user;
   }
 }

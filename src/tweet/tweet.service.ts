@@ -60,7 +60,7 @@ export class TweetService {
       throw new NotFoundException('User with userId ' + userId + ' not found');
     }
 
-    const tweets = await this.paginationService.paginatedQuery(
+    return await this.paginationService.paginatedQuery(
       paginationQueryDto,
       this.tweetRepository,
       {
@@ -87,10 +87,10 @@ export class TweetService {
       },
     );
 
-    return {
-      message: 'Tweets fetched successfully',
-      tweets,
-    };
+    // return {
+    //   message: 'Tweets fetched successfully',
+    //   tweets,
+    // };
   }
 
   async createTweet(createTweetDto: CreateTweetDto) {

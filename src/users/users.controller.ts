@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { PaginationQueryDto } from 'src/common/pagination/dtos/pagination-query.dto';
 // import { GetUserByIdDto } from './dtos/get-user-by-id.dto';
 // import { GetUserParamDto } from './dtos/get-user-param.dto';
 // import { ParseParamDtoPipe } from './dtos/parse-param-dto-pipe';
@@ -239,12 +240,8 @@ export class UsersController {
   }
 
   @Get('all-users')
-  async getAllUsers() {
-    const users = await this.usersService.getUsers();
-    return {
-      message: 'All users fetched successfully',
-      users,
-    };
+  async getAllUsers(@Query() paginationQueryDto: PaginationQueryDto) {
+    return await this.usersService.getUsers(paginationQueryDto);
   }
 
   // GET /users/:id

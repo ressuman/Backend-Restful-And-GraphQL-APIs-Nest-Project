@@ -28,7 +28,7 @@ export class CreateUserDto {
 
   @IsString({ message: 'Password must be a string' })
   @IsNotEmpty({ message: 'Password is required' })
-  @MaxLength(32, { message: 'Password must not exceed 32 characters' })
+  @MaxLength(100, { message: 'Password must not exceed 100 characters' })
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
 

@@ -18,6 +18,7 @@ export class PaginationService {
     paginationQueryDto: PaginationQueryDto,
     repository: Repository<T>,
     where?: FindOptionsWhere<T>,
+    relations?: string[],
   ): Promise<PaginationInterface<T>> {
     const findOptions: FindManyOptions<T> = {
       where,
@@ -39,6 +40,10 @@ export class PaginationService {
 
     if (where) {
       findOptions.where = where;
+    }
+
+    if (relations) {
+      findOptions.relations = relations;
     }
 
     const result = await repository.find(findOptions);
