@@ -6,9 +6,9 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { User } from './user.entity';
-import { Tag } from './tag.entity';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { User } from 'src/user/user.entity';
+import { Tag } from 'src/tag/tag.entity';
 
 @ObjectType()
 @Entity()
@@ -20,6 +20,7 @@ export class Post {
   @Field()
   @Column()
   title: string;
+
   @Field()
   @Column()
   content: string;

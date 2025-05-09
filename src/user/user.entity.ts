@@ -7,9 +7,9 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Post } from './post.entity';
-import { Profile } from './profile.entity';
 import { Role } from 'src/enums/role.enum';
+import { Profile } from 'src/profile/profile.entity';
+import { Post } from 'src/post/post.entity';
 //import { Exclude } from 'class-transformer';
 
 @ObjectType()
