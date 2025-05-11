@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  DeleteDateColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Post } from 'src/post/post.entity';
 
@@ -10,10 +18,32 @@ export class Tag {
   id: number;
 
   @Field()
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: false,
+    unique: true,
+  })
   name: string;
 
+  // @Field(() => [Post])
+  // @ManyToMany(() => Post, (post) => post.tags)
+  // posts: Promise<Post[]>;
   @Field(() => [Post])
-  @ManyToMany(() => Post, (post) => post.tags)
-  posts: Promise<Post[]>;
+  @ManyToMany(() => Post, (post) => post.tags, {
+    onDelete: 'CASCADE',
+  })
+  posts: Post[];
+
+  @Field()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Field()
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Field()
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

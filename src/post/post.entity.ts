@@ -5,6 +5,9 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/user/user.entity';
@@ -18,19 +21,63 @@ export class Post {
   id: number;
 
   @Field()
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+  })
   title: string;
 
   @Field()
-  @Column()
+  @Column({
+    type: 'text',
+    nullable: false,
+  })
   content: string;
 
+  // @Field(() => User)
+  // @ManyToOne(() => User, (user) => user.posts, {
+  //   onDelete: 'CASCADE',
+  //   nullable: false,
+  // })
+  // user: Promise<User>;
+
+  // @Field(() => [Tag])
+  // @ManyToMany(() => Tag, (tag) => tag.posts, {
+  //   onDelete: 'CASCADE',
+  //   nullable: false,
+  // })
+  // @JoinTable({
+  //   name: 'post_tags',
+  // })
+  // tags: Promise<Tag[]>;
   @Field(() => User)
-  @ManyToOne(() => User, (user) => user.posts)
-  user: Promise<User>;
+  @ManyToOne(() => User, (user) => user.posts, {
+    onDelete: 'CASCADE',
+    nullable: false,
+    eager: true,
+  })
+  user: User;
 
   @Field(() => [Tag])
-  @ManyToMany(() => Tag, (tag) => tag.posts, { cascade: true })
-  @JoinTable()
-  tags: Promise<Tag[]>;
+  @ManyToMany(() => Tag, (tag) => tag.posts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'post_tags',
+  })
+  tags: Tag[];
+
+  @Field()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Field()
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Field()
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

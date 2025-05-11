@@ -11,8 +11,9 @@ import appConfig from './config/app.config';
 import envValidation from './config/env.validation';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-//import { GraphQLModule } from '@nestjs/graphql';
-//import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { AppResolver } from './app.resolver';
 
 @Module({
   imports: [
@@ -45,14 +46,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         database: configService.get<string>('database.name'),
       }),
     }),
-    // GraphQLModule.forRoot<ApolloDriverConfig>({
-    //   driver: ApolloDriver,
-    //   autoSchemaFile: true,
-    //   debug: true,
-    //   playground: true,
-    // }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+      debug: true,
+      playground: true,
+      path: '/api/v1/graphql',
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppResolver],
 })
 export class AppModule {}

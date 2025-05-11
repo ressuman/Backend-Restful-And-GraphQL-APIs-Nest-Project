@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+  DeleteDateColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/user/user.entity';
 
@@ -10,14 +19,41 @@ export class Profile {
   id: number;
 
   @Field()
-  @Column()
-  bio: string;
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  bio?: string;
 
   @Field()
-  @Column()
-  avatar: string;
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  avatar?: string;
 
+  // @Field(() => User)
+  // @OneToOne(() => User, (user) => user.profile, {
+  //   onDelete: 'CASCADE',
+  // })
+  // user: Promise<User>;
   @Field(() => User)
-  @OneToOne(() => User, (user) => user.profile)
-  user: Promise<User>;
+  @OneToOne(() => User, (user) => user.profile, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  user: User;
+
+  @Field()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Field()
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Field()
+  @DeleteDateColumn()
+  deletedAt: Date;
 }
