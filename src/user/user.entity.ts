@@ -61,27 +61,17 @@ export class User {
   })
   password: string;
 
-  // @Field(() => Profile)
-  // @OneToOne(() => Profile, (profile) => profile.user, {
-  //   cascade: true,
-  //   nullable: true,
-  // })
-  // @JoinColumn()
-  // profile: Promise<Profile>;
-
-  // @Field(() => [Post])
-  // @OneToMany(() => Post, (post) => post.user)
-  // posts: Promise<Post[]>;
   @Field(() => Profile)
   @OneToOne(() => Profile, (profile) => profile.user, {
     cascade: true,
     nullable: true,
   })
-  profile?: Profile;
+  //@JoinColumn()
+  profile?: Promise<Profile>;
 
   @Field(() => [Post])
   @OneToMany(() => Post, (post) => post.user)
-  posts: Post[];
+  posts: Promise<Post[]>;
 
   @Field()
   @CreateDateColumn()
