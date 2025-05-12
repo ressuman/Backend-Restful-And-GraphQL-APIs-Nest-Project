@@ -95,68 +95,79 @@ export class UserService {
     return user;
   }
 
+  // async update(id: number, input: UpdateUserInputDto): Promise<User> {
+  //   // Find the existing user
+  //   const existingUser = await this.userRepository.findOne({
+  //     where: { id },
+  //     relations: ['profile'],
+  //   });
+
+  //   if (!existingUser) {
+  //     throw new NotFoundException(`User with ID ${id} not found`);
+  //   }
+
+  //   // Check if email or username already exist (if being updated)
+  //   if (input.email) {
+  //     const emailExists = await this.userRepository.findOne({
+  //       where: { email: input.email, id: Not(id) },
+  //     });
+  //     if (emailExists) {
+  //       throw new BadRequestException('Email is already in use');
+  //     }
+  //   }
+
+  //   if (input.username) {
+  //     const usernameExists = await this.userRepository.findOne({
+  //       where: { username: input.username, id: Not(id) },
+  //     });
+  //     if (usernameExists) {
+  //       throw new BadRequestException('Username is already in use');
+  //     }
+  //   }
+
+  //   // Update user fields
+  //   if (input.username) existingUser.username = input.username;
+  //   if (input.email) existingUser.email = input.email;
+  //   if (input.role) existingUser.role = input.role;
+  //   if (input.password) existingUser.password = input.password;
+
+  //   // Save the updated user first
+  //   const updatedUser = await this.userRepository.save(existingUser);
+
+  //   // Handle profile update separately
+  //   if (input.profile) {
+  //     if (!existingUser.profile) {
+  //       // Create new profile if it doesn't exist
+  //       const newProfile = this.profileRepository.create({
+  //         bio: input.profile.bio,
+  //         avatar: input.profile.avatar,
+  //         userId: existingUser.id,
+  //       });
+  //       updatedUser.profile = await this.profileRepository.save(newProfile);
+  //     } else {
+  //       // Update existing profile
+  //       if (input.profile.bio !== undefined) {
+  //         existingUser.profile.bio = input.profile.bio;
+  //       }
+  //       if (input.profile.avatar !== undefined) {
+  //         existingUser.profile.avatar = input.profile.avatar;
+  //       }
+  //       await this.profileRepository.save(existingUser.profile);
+  //       updatedUser.profile = existingUser.profile;
+  //     }
+  //   }
+
+  //   return updatedUser;
+  // }
   async update(id: number, input: UpdateUserInputDto): Promise<User> {
-    // Find the existing user
-    const existingUser = await this.userRepository.findOne({
+    const user = await this.userRepository.findOneOrFail({
       where: { id },
-      relations: ['profile'],
     });
 
-    if (!existingUser) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-
-    // Check if email or username already exist (if being updated)
-    if (input.email) {
-      const emailExists = await this.userRepository.findOne({
-        where: { email: input.email, id: Not(id) },
-      });
-      if (emailExists) {
-        throw new BadRequestException('Email is already in use');
-      }
-    }
-
-    if (input.username) {
-      const usernameExists = await this.userRepository.findOne({
-        where: { username: input.username, id: Not(id) },
-      });
-      if (usernameExists) {
-        throw new BadRequestException('Username is already in use');
-      }
-    }
-
-    // Update user fields
-    if (input.username) existingUser.username = input.username;
-    if (input.email) existingUser.email = input.email;
-    if (input.role) existingUser.role = input.role;
-    if (input.password) existingUser.password = input.password;
-
-    // Update profile if provided
-    if (input.profile) {
-      if (!existingUser.profile) {
-        // Create new profile if it doesn't exist
-        const newProfile = this.profileRepository.create({
-          bio: input.profile.bio,
-          avatar: input.profile.avatar,
-          userId: existingUser.id,
-        });
-        existingUser.profile = await this.profileRepository.save(newProfile);
-      } else {
-        // Update existing profile
-        if (input.profile.bio !== undefined) {
-          existingUser.profile.bio = input.profile.bio;
-        }
-        if (input.profile.avatar !== undefined) {
-          existingUser.profile.avatar = input.profile.avatar;
-        }
-        await this.profileRepository.save(existingUser.profile);
-      }
-    }
-
-    // Save and return updated user
-    return await this.userRepository.save(existingUser);
+    return await this.userRepository.save(new User(Object.assign(user, input)));
   }
 
+  // Soft delete
   async delete(id: number): Promise<User> {
     // Find the user to be deleted
     const user = await this.userRepository.findOne({
@@ -170,5 +181,13 @@ export class UserService {
 
     // Soft delete the user
     return await this.userRepository.softRemove(user);
+  }
+
+  // Hard delete
+  async remove(id: number) {
+    // Find the user to be deleted
+    const result = await this.userRepository.delete(id);
+
+    return result.affected === 1;
   }
 }

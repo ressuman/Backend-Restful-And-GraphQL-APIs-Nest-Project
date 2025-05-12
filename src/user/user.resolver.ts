@@ -103,18 +103,33 @@ export class UserResolver {
     return user.posts || [];
   }
 
+  @Query(() => [User])
+  async users(): Promise<User[]> {
+    return this.userService.findAll();
+  }
+
+  @Query(() => User)
+  async user(@Args('id', { type: () => Number }) id: number): Promise<User> {
+    return this.userService.findOne(id);
+  }
+
   @Mutation(() => User)
   async updateUser(
-    @Args('id', { type: () => Number }) id: number,
+    @Args('id', { type: () => Int }) id: number,
     @Args('input') input: UpdateUserInputDto,
   ): Promise<User> {
     return this.userService.update(id, input);
   }
 
+  // Hard delete
+  @Mutation(() => Boolean)
+  async removeUser(@Args('id', { type: () => Int }) id: number) {
+    return await this.userService.remove(id);
+  }
+
+  // Soft delete
   @Mutation(() => User)
-  async deleteUser(
-    @Args('id', { type: () => Number }) id: number,
-  ): Promise<User> {
+  async deleteUser(@Args('id', { type: () => Int }) id: number): Promise<User> {
     return this.userService.delete(id);
   }
 }

@@ -7,6 +7,7 @@ import {
   MaxLength,
   IsEmail,
   IsOptional,
+  IsEnum,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { CreateProfileInputDto } from 'src/profile/dtos/create-profile.input.dto';
@@ -37,6 +38,7 @@ export class CreateUserInputDto {
   password: string;
 
   @Field(() => Role)
+  @IsEnum(Role, { message: 'Role must be a valid role' })
   @IsNotEmpty({ message: 'Role is required' })
   role: Role = Role.USER;
 
