@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { EntityNotFoundFilter } from './entity-not-found/entity-not-found.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,8 @@ async function bootstrap() {
 
   // Set global prefix
   app.setGlobalPrefix('api');
+
+  app.useGlobalFilters(new EntityNotFoundFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({

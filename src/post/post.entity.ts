@@ -35,38 +35,25 @@ export class Post {
   })
   content: string;
 
-  // @Field(() => User)
-  // @ManyToOne(() => User, (user) => user.posts, {
-  //   onDelete: 'CASCADE',
-  //   nullable: false,
-  // })
-  // user: Promise<User>;
-
-  // @Field(() => [Tag])
-  // @ManyToMany(() => Tag, (tag) => tag.posts, {
-  //   onDelete: 'CASCADE',
-  //   nullable: false,
-  // })
-  // @JoinTable({
-  //   name: 'post_tags',
-  // })
-  // tags: Promise<Tag[]>;
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.posts, {
     onDelete: 'CASCADE',
     nullable: false,
-    eager: true,
+    //eager: true,
   })
+  //user: Promise<User>;
   user: User;
 
   @Field(() => [Tag])
   @ManyToMany(() => Tag, (tag) => tag.posts, {
-    cascade: true,
     onDelete: 'CASCADE',
+    nullable: false,
+    eager: true,
   })
   @JoinTable({
     name: 'post_tags',
   })
+  //tags: Promise<Tag[]>;
   tags: Tag[];
 
   @Field()
@@ -77,7 +64,7 @@ export class Post {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Field()
+  @Field({ nullable: true })
   @DeleteDateColumn()
   deletedAt: Date;
 }

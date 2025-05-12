@@ -4,7 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  //JoinColumn,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -61,17 +61,26 @@ export class User {
   })
   password: string;
 
-  @Field(() => Profile)
+  @Field(() => Profile, { nullable: true })
   @OneToOne(() => Profile, (profile) => profile.user, {
     cascade: true,
     nullable: true,
+    //eager: true,
   })
-  //@JoinColumn()
-  profile?: Promise<Profile>;
+  @JoinColumn()
+  //profile?: Promise<Profile>;
+  profile: Profile;
 
-  @Field(() => [Post])
-  @OneToMany(() => Post, (post) => post.user)
-  posts: Promise<Post[]>;
+  //@Field(() => [Post])
+  //@Field(() => [Post], { nullable: true })
+  @Field(() => [Post], { nullable: 'items' })
+  @OneToMany(
+    () => Post,
+    (post) => post.user,
+    //{ lazy: true }
+  )
+  //posts: Promise<Post[]>;
+  posts: Post[];
 
   @Field()
   @CreateDateColumn()

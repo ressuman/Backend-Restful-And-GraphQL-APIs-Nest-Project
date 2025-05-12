@@ -18,14 +18,14 @@ export class Profile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({
     type: 'text',
     nullable: true,
   })
   bio?: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({
     type: 'varchar',
     length: 255,
@@ -33,17 +33,17 @@ export class Profile {
   })
   avatar?: string;
 
-  // @Field(() => User)
-  // @OneToOne(() => User, (user) => user.profile, {
-  //   onDelete: 'CASCADE',
-  // })
-  // user: Promise<User>;
   @Field(() => User)
   @OneToOne(() => User, (user) => user.profile, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn()
+  //@JoinColumn()
+  @JoinColumn({ name: 'userId' })
+  //user: Promise<User>;
   user: User;
+
+  @Column()
+  userId: number;
 
   @Field()
   @CreateDateColumn()
@@ -53,7 +53,8 @@ export class Profile {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Field()
+  //@Field()
+  @Field({ nullable: true })
   @DeleteDateColumn()
   deletedAt: Date;
 }

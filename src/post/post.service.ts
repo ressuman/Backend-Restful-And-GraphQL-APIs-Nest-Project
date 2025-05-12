@@ -11,14 +11,11 @@ export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
-
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
   ) {}
-
   async create(
     input: CreatePostInputDto,
   ): Promise<{ message: string; post: Post }> {
@@ -27,19 +24,15 @@ export class PostService {
         id: input.userId,
       },
     });
-
     const tags = await this.tagRepository.findBy({
       id: In(input.tagIds || []),
     });
-
     const post = this.postRepository.create({
       ...input,
       user,
       tags,
     });
-
     await this.postRepository.save(post);
-
     return {
       message: 'Post created successfully',
       post,

@@ -26,14 +26,9 @@ export class Tag {
   })
   name: string;
 
-  // @Field(() => [Post])
-  // @ManyToMany(() => Post, (post) => post.tags)
-  // posts: Promise<Post[]>;
   @Field(() => [Post])
-  @ManyToMany(() => Post, (post) => post.tags, {
-    onDelete: 'CASCADE',
-  })
-  posts: Post[];
+  @ManyToMany(() => Post, (post) => post.tags)
+  posts: Promise<Post[]>;
 
   @Field()
   @CreateDateColumn()

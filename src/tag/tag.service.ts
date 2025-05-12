@@ -10,13 +10,11 @@ export class TagService {
     @InjectRepository(Tag)
     private readonly tagRepository: Repository<Tag>,
   ) {}
-
   async create(
     input: CreateTagInputDto,
   ): Promise<{ message: string; tag: Tag }> {
     const tag = this.tagRepository.create(input);
     await this.tagRepository.save(tag);
-
     return {
       message: 'Tag created successfully',
       tag,
