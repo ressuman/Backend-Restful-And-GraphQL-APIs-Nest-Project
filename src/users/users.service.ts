@@ -142,13 +142,13 @@ export class UsersService {
   public async getAllUsers() {
     try {
       //const environment = this.configService.get<string>('ENV_MODE');
-      const environment: string | undefined =
-        this.configService.get<string>('ENV_MODE');
-      console.log(environment);
-      const env = process.env.ENV_MODE;
-      console.log(env);
-      const envI = process.env.NODE_ENV;
-      console.log(envI);
+      // const environment: string | undefined =
+      //   this.configService.get<string>('ENV_MODE');
+      // console.log(environment);
+      // const env = process.env.ENV_MODE;
+      // console.log(env);
+      // const envI = process.env.NODE_ENV;
+      // console.log(envI);
 
       return await this.userRepository.find({
         relations: {

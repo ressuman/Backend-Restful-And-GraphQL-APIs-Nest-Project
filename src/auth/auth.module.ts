@@ -7,10 +7,18 @@ import { HashingModule } from './provider/hashing/hashing.module';
 import { BcryptModule } from './provider/bcrypt/bcrypt.module';
 import authConfig from './config/auth.config';
 import { JwtModule } from '@nestjs/jwt';
+//import { APP_GUARD } from '@nestjs/core';
+//import { AuthorizeGuard } from './guards/authorize.guard';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthorizeGuard,
+    // },
+  ],
   imports: [
     forwardRef(() => UsersModule),
     //UsersModule,

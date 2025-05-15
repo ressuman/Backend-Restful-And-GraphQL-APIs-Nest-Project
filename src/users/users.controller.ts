@@ -10,12 +10,14 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { PaginationQueryDto } from 'src/common/pagination/dtos/pagination-query.dto';
+//import { AuthorizeGuard } from 'src/auth/guards/authorize.guard';
 // import { GetUserByIdDto } from './dtos/get-user-by-id.dto';
 // import { GetUserParamDto } from './dtos/get-user-param.dto';
 // import { ParseParamDtoPipe } from './dtos/parse-param-dto-pipe';
@@ -23,6 +25,7 @@ import { PaginationQueryDto } from 'src/common/pagination/dtos/pagination-query.
 
 // http://localhost:3000/users
 @Controller('users')
+//@UseGuards(AuthorizeGuard)
 // export class UsersController {
 //   constructor(private readonly usersService: UsersService) {}
 //   // http://localhost:3000/users
@@ -239,12 +242,14 @@ export class UsersController {
     };
   }
 
+  //@UseGuards(AuthorizeGuard)
   @Get('all-users')
   async getAllUsers(@Query() paginationQueryDto: PaginationQueryDto) {
     return await this.usersService.getUsers(paginationQueryDto);
   }
 
   // GET /users/:id
+  //@UseGuards(AuthorizeGuard)
   @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findUserById(id);

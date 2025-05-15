@@ -9,11 +9,20 @@ import { Tweet } from 'src/tweet/tweet.entity';
 import { PaginationModule } from '../common/pagination/pagination.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { HashingModule } from 'src/auth/provider/hashing/hashing.module';
+//import { ConfigModule } from '@nestjs/config';
+//import authConfig from 'src/auth/config/auth.config';
+//import { JwtModule } from '@nestjs/jwt';
+//import { APP_GUARD } from '@nestjs/core';
+//import { AuthorizeGuard } from 'src/auth/guards/authorize.guard';
 
 @Module({
   controllers: [UsersController],
   providers: [
     UsersService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthorizeGuard,
+    // },
     //forwardRef(() => AuthModule)
   ],
   exports: [UsersService], // Export UsersService to be used in other modules
@@ -25,6 +34,8 @@ import { HashingModule } from 'src/auth/provider/hashing/hashing.module';
     TypeOrmModule.forFeature([Users, Profile, Tweet]),
     forwardRef(() => AuthModule),
     HashingModule,
+    // ConfigModule.forFeature(authConfig),
+    // JwtModule.registerAsync(authConfig.asProvider()),
   ], // Add your entities here
 })
 export class UsersModule {}

@@ -14,6 +14,10 @@ import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
 import envValidation, { configValidationSchema } from './config/env.validation';
 import { PaginationModule } from './common/pagination/pagination.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthorizeGuard } from './auth/guards/authorize.guard';
+import authConfig from './auth/config/auth.config';
+import { JwtModule } from '@nestjs/jwt';
 
 const ENV = process.env.NODE_ENV;
 console.log(ENV);
@@ -111,6 +115,8 @@ console.log(ENV);
       //validationSchema: configValidationSchema,
     }),
     PaginationModule,
+    ConfigModule.forFeature(authConfig),
+    JwtModule.registerAsync(authConfig.asProvider()),
   ],
   //  TypeOrmModule.forRootAsync({
   //     useFactory: async () => ({
@@ -126,6 +132,12 @@ console.log(ENV);
   //   }),
   // ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthorizeGuard,
+    },
+  ],
 })
 export class AppModule {}
