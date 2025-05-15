@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { TweetService } from './tweet.service';
 import { CreateTweetDto } from './dtos/create-tweet.dto';
@@ -43,8 +44,9 @@ export class TweetController {
 
   // POST /tweet
   @Post()
-  async createTweet(@Body() tweet: CreateTweetDto) {
-    return await this.tweetService.createTweet(tweet);
+  async createTweet(@Body() tweet: CreateTweetDto, @Req() request) {
+    console.log(request.user);
+    //return await this.tweetService.createTweet(tweet);
   }
 
   // GET /tweet/:id

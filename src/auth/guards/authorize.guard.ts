@@ -10,6 +10,8 @@ import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 import authConfig from '../config/auth.config';
+import { Reflector } from '@nestjs/core';
+import { REQUEST_USER_KEY } from 'src/constants/constants';
 
 @Injectable()
 export class AuthorizeGuard implements CanActivate {
@@ -18,9 +20,21 @@ export class AuthorizeGuard implements CanActivate {
 
     @Inject(authConfig.KEY)
     private readonly authConfiguration: ConfigType<typeof authConfig>,
+
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Read isPublic from the route metadata
+    const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     // throw new Error('Method not implemented.');
     //return false;
 
@@ -51,7 +65,7 @@ export class AuthorizeGuard implements CanActivate {
         // }
       );
 
-      request['user'] = payload;
+      request[REQUEST_USER_KEY] = payload;
       console.log('Payload:', payload);
     } catch (error) {
       console.error('Token validation failed');
