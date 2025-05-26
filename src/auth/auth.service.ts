@@ -15,6 +15,7 @@ import { HashingService } from './provider/hashing/hashing.service';
 import { JwtService } from '@nestjs/jwt';
 import { Users } from 'src/users/user.entity';
 import { ActiveUserTypeInterface } from './interfaces/active-user-type.interface';
+import { RefreshTokenDto } from './dtos/refresh-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -122,6 +123,36 @@ export class AuthService {
       user,
       token,
     };
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    try {
+      // 1. Verify the refresh token
+      const { sub } = await this.jwtService.verifyAsync<{ sub: number }>(
+        refreshTokenDto.refreshToken,
+        {
+          secret: this.authConfiguration.secret,
+          audience: this.authConfiguration.audience,
+          issuer: this.authConfiguration.issuer,
+        },
+      );
+
+      // 2. Find the user associated with the refresh token-from the db using the userId in the payload
+      const user = await this.usersService.findUserById(sub);
+
+      // 3. If the user is found, generate a new access token and refresh token
+      const token = await this.generateToken(user);
+
+      // 4. Return the new tokens
+      return {
+        success: true,
+        message: 'Tokens refreshed successfully',
+        user,
+        token,
+      };
+    } catch (error) {
+      throw new UnauthorizedException(error);
+    }
   }
 
   private async signToken<T>(userId: number, expiresIn: number, payload?: T) {
