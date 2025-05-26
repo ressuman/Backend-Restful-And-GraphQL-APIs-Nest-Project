@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Tweet } from './tweet.entity';
@@ -10,6 +16,8 @@ import { PaginationQueryDto } from '../common/pagination/dtos/pagination-query.d
 import { PaginationService } from 'src/common/pagination/pagination.service';
 import { PaginationInterface } from 'src/common/pagination/pagination.interface';
 import { ActiveUserTypeInterface } from 'src/auth/interfaces/active-user-type.interface';
+//import { Users } from 'src/users/user.entity';
+//import { Hashtag } from 'src/hashtag/hashtag.entity';
 
 @Injectable()
 export class TweetService {
@@ -99,24 +107,41 @@ export class TweetService {
     // activeUser: ActiveUserTypeInterface,
     userId: number,
   ) {
-    // const user = await this.userService.findUserById(createTweetDto.userId);
-    // const user = await this.userService.findUserById(activeUser.sub);
-    const user = await this.userService.findUserById(userId);
+    // let user = undefined;
+    // let hashtags = undefined;
+    let user;
+    let hashtags;
 
-    if (!user) {
-      throw new Error('User not found');
+    try {
+      // const user = await this.userService.findUserById(createTweetDto.userId);
+      // const user = await this.userService.findUserById(activeUser.sub);
+      user = await this.userService.findUserById(userId);
+
+      // if (!user) {
+      //   throw new Error('User not found');
+      // }
+
+      // const hashtags = await this.hashtagService.findHashtags(
+      //   createTweetDto.hashtags || [],
+      // );
+
+      // Safely get hashtags array from IDs (if any provided)
+      hashtags =
+        createTweetDto.hashtags && createTweetDto.hashtags.length > 0
+          ? (await this.hashtagService.findHashtags(createTweetDto.hashtags))
+              .hashtag
+          : [];
+    } catch (error) {
+      throw new RequestTimeoutException();
     }
 
-    // const hashtags = await this.hashtagService.findHashtags(
-    //   createTweetDto.hashtags || [],
-    // );
-
-    // Safely get hashtags array from IDs (if any provided)
-    const hashtags =
-      createTweetDto.hashtags && createTweetDto.hashtags.length > 0
-        ? (await this.hashtagService.findHashtags(createTweetDto.hashtags))
-            .hashtag
-        : [];
+    console.log(createTweetDto.hashtags, hashtags);
+    if (
+      createTweetDto.hashtags &&
+      createTweetDto.hashtags?.length !== hashtags?.length
+    ) {
+      throw new BadRequestException();
+    }
 
     const tweet = this.tweetRepository.create({
       text: createTweetDto.text,
@@ -125,12 +150,23 @@ export class TweetService {
       hashtags,
     });
 
-    await this.tweetRepository.save(tweet);
+    try {
+      await this.tweetRepository.save(tweet);
 
-    return {
-      message: 'Tweet created successfully',
-      tweet,
-    };
+      return {
+        message: 'Tweet created successfully',
+        tweet,
+      };
+    } catch (error) {
+      throw new ConflictException(error);
+    }
+
+    // await this.tweetRepository.save(tweet);
+
+    // return {
+    //   message: 'Tweet created successfully',
+    //   tweet,
+    // };
   }
 
   async getTweetById(id: string) {

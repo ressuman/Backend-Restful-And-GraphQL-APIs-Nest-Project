@@ -14,7 +14,11 @@ export const configValidationSchema = Joi.object({
   DB_NAME: Joi.string().required(),
   DB_SYNC: Joi.boolean().required(),
   DB_AUTO_LOAD: Joi.boolean().required(),
-  //SECRET_KEY: Joi.string().required(),
+  JWT_TOKEN_SECRET: Joi.string().required(),
+  JWT_TOKEN_EXPIRESIN: Joi.number().default(3600).required(),
+  JWT_REFRESH_TOKEN_EXPIRESIN: Joi.number().default(86400).required(),
+  JWT_TOKEN_AUDIENCE: Joi.string().required(),
+  JWT_TOKEN_ISSUER: Joi.string().required(),
 });
 
 export default Joi.object({
@@ -32,4 +36,8 @@ export default Joi.object({
   DB_SYNC: Joi.boolean().required(),
   DB_AUTO_LOAD: Joi.boolean().required(),
   JWT_TOKEN_SECRET: Joi.string().required(),
+  JWT_TOKEN_EXPIRESIN: Joi.number().default(3600).required(),
+  JWT_REFRESH_TOKEN_EXPIRESIN: Joi.number().default(86400).required(),
+  JWT_TOKEN_AUDIENCE: Joi.string().required(),
+  JWT_TOKEN_ISSUER: Joi.string().required(),
 });
