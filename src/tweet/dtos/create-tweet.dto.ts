@@ -15,9 +15,9 @@ export class CreateTweetDto {
   @IsOptional()
   image?: string;
 
-  @IsNotEmpty({ message: 'User ID is required' })
-  @IsInt({ message: 'User ID must be an integer' })
-  userId: number;
+  // @IsNotEmpty({ message: 'User ID is required' })
+  // @IsInt({ message: 'User ID must be an integer' })
+  // userId: number;
 
   @IsOptional()
   @IsInt({ each: true, message: 'Each hashtag ID must be an integer' })

@@ -9,6 +9,7 @@ import { UpdateTweetDto } from './dtos/update-tweet.dto';
 import { PaginationQueryDto } from '../common/pagination/dtos/pagination-query.dto';
 import { PaginationService } from 'src/common/pagination/pagination.service';
 import { PaginationInterface } from 'src/common/pagination/pagination.interface';
+import { ActiveUserTypeInterface } from 'src/auth/interfaces/active-user-type.interface';
 
 @Injectable()
 export class TweetService {
@@ -93,8 +94,14 @@ export class TweetService {
     // };
   }
 
-  async createTweet(createTweetDto: CreateTweetDto) {
-    const user = await this.userService.findUserById(createTweetDto.userId);
+  async createTweet(
+    createTweetDto: CreateTweetDto,
+    // activeUser: ActiveUserTypeInterface,
+    userId: number,
+  ) {
+    // const user = await this.userService.findUserById(createTweetDto.userId);
+    // const user = await this.userService.findUserById(activeUser.sub);
+    const user = await this.userService.findUserById(userId);
 
     if (!user) {
       throw new Error('User not found');
